@@ -4,8 +4,8 @@
 #include "ipv4.h"
 
 void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info) {
-	/* header length */
-	info->header_len = packet[0] & 0x0f;
+	/* header length (given length is in 4-byte blocks */
+	info->header_len = (packet[0] & 0x0f) * 4;
 	
 	/* total length */
 	info->total_len = packet[2] * 256;
