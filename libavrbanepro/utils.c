@@ -15,7 +15,7 @@ uint16_t proto_u_checksum(uint8_t* buf, uint16_t buf_len) {
 	
 	/* add the carries (gives us 16-bit 1's complement sum) */
 	ret = sum & 0xffff;
-	ret += ((sum >> 8) & 0xffff);
+	ret += ((sum >> 16) & 0xffff);
 	
 	/* return sum's 1's complement */
 	return ~ret;
