@@ -2,6 +2,65 @@
 #include <string.h>
 
 #include "ipv4.h"
+#include "utils.h"
+
+uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf) {
+	uint16_t checksum;
+	
+	/* version/IHL, type of service, length */
+	buf[0] = 0x40 | ((info->header_len / 4) & 0xf);
+	buf[1] = 0;
+	buf[2] = (info->total_len >> 8) & 0xff;
+	buf[3] = info->total_len & 0xff;
+	
+	/* ID */
+	buf[4] = 0;
+	buf[5] = 0;
+	
+	/* flags and fragment offset */
+	buf[6] = 0x40; /* don't fragment */
+	buf[7] = 0;
+	
+	/* TTL */
+	buf[8] = info->ttl;
+	
+	/* transport protocol */
+	switch (info->proto) {
+		case PROTO_IPV4_PROTO_ICMP:
+		buf[9] = 1;
+		break;
+		
+		case PROTO_IPV4_PROTO_TCP:
+		buf[9] = 6;
+		break;
+		
+		case PROTO_IPV4_PROTO_UDP:
+		buf[9] = 17;
+		break;
+		
+		default:
+		return 0;
+		break;
+	}
+	
+	/* addresses */
+	memcpy(buf + 12, info->src_addr, 4);
+	memcpy(buf + 16, info->dst_addr, 4);
+	
+	/* checksum */
+	if (info->checksum != 0) {
+		buf[10] = (info->checksum >> 8) & 0xff;
+		buf[11] = info->checksum & 0xff;
+	} else {
+		buf[10] = 0;
+		buf[11] = 0;
+		checksum = proto_u_checksum(buf, info->header_len);
+		buf[10] = (checksum >> 8) & 0xff;
+		buf[11] = checksum & 0xff;
+	}
+	
+	return 20;
+}
 
 void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info) {
 	/* header length (given length is in 4-byte blocks */

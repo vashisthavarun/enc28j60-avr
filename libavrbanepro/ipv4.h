@@ -36,4 +36,14 @@ struct proto_ipv4_info {
  */
 void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info);
 
+/**
+ * Formats an IPv4 header using an information structure
+ *
+ * @param info		Information structure (set checksum to 0 for it to
+ *			be autocomputed)
+ * @param buf		Buffer where to put formatted packet header (big enough)
+ * @return		Formatted packet header length (0 if error)
+ */
+uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf);
+
 #endif /* _IPV4_H */

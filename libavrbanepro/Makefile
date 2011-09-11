@@ -1,6 +1,6 @@
 # Sources:
-C_SRC=ethernet.c arp.c ipv4.c utils.c
-H_SRC=ethernet.h arp.h ipv4.h utils.h
+C_SRC=ethernet.c arp.c ipv4.c icmp.c utils.c
+H_SRC=ethernet.h arp.h ipv4.h icmp.h utils.h
 
 # Target MCU
 MCU ?= atmega16
