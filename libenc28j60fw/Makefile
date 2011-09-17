@@ -7,7 +7,7 @@ MY_LIBS = enc28j60d
 
 # Target MCU
 MCU ?= atmega16
-F_CPU ?= 8000000UL
+F_CPU ?= 16000000UL
 
 # Target library:
 TARGET_LIB=libenc28j60fw.a

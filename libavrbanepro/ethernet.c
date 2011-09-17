@@ -78,6 +78,7 @@ uint8_t proto_eth_format_header(struct proto_eth_info* info, uint8_t* buf) {
 		case PROTO_ETH_TYPE_ARP:
 		buf[0] = 8;
 		buf[1] = 6;
+		break;
 		
 		default:
 		return 0;

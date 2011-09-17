@@ -70,7 +70,7 @@
 # options for possible values)
 export MCU = atmega16
 # MCU frequency (e.g. F_CPU=8000000UL)
-export F_CPU = 8000000UL
+export F_CPU = 16000000UL
 
 # Name of our project
 # (use a single word, e.g. 'myproject')
@@ -83,7 +83,7 @@ PROJECTNAME=enc28j60testing
 # (NOT .s !!!) for assembly source code files.
 PRJSRC= $(wildcard *.cpp) $(wildcard *.c) 
 
-MY_LIBS=enc28j60fw enc28j60d
+MY_LIBS=enc28j60fw enc28j60d avrbanepro
 MY_LIBS_PATH=$(foreach n, $(MY_LIBS), ../lib$(n)/lib$(n).a)
 
 # additional includes (e.g. -I/path/to/mydir)

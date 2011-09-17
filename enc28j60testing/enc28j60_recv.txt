@@ -1,0 +1,54 @@
+ENC28J60 - guide de réception
+
+
+initialiser le tampon de réception
+	1. low-byte de l'adresse de base
+		ERXSTL = 0x80
+	2. high-byte de l'adresse de base
+		ERXSTH = 0
+	3. low-byte de l'adresse haute
+		ERXNDL = 0xff
+	4. high-byte de l'adresse haute
+		ERXND = 0x1f
+	5. low-byte du pointeur de paquet reçu (égal à l'adresse de base)
+		ERXRDPTL = 0x80
+	6. high-byte du pointeur de paquet reçu (égal à l'adresse de base)
+		ERXRDPTH = 0
+
+initialiser les filtres de réception
+	1. activer seulement les filtres unicast, CRC et broadcast
+		ERXFCON = UCEN | CRCEN | BCEN
+
+initialiser MAC
+	1. activer la réception au niveau MAC
+		MACON1 |= MARXEN
+	reste de l'initialisation MAC
+		...
+
+activer la réception
+	1. activer la réception de paquets
+		ECON1 |= RXEN
+	1. activer l'autoincrémentation de lecture SPI du tampon de réception
+		ECON2 |= AUTOINC
+
+réception d'un paquet
+	1. scruter EIR.PKTIF
+		si EIR.PKTIF = 1, un paquet doit être vérifié
+	2. low-byte du pointeur de prochain paquet
+		next packet pointer (L) <= RBM
+	3. high-byte du pointeur de prochain paquet
+		next packet pointer (H) <= RBM
+	4. low-byte de la taille du paquet reçu
+		byte count (L) <= RBM
+	5. high-byte de la taille du paquet reçu
+		byte count (H) <= RBM
+	6. ignorer les deux prochains octets (reste du vecteur d'état)
+		RBM x2
+	7. lire et analyser le paquet progressivement
+		pour (byte count) : current byte <= RBM
+	8. low-byte du pointeur de paquet reçu
+		ERXRDPTL = next packet pointer (L)
+	9. high-byte du pointeur de paquet reçu
+		ERXRDPTH = next packet pointer (H)
+	10. décrémenter le compteur de paquets
+		ECON2 |= PKTDEC

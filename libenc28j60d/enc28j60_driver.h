@@ -24,14 +24,6 @@ with this library; if not, write to the Free Software Foundation, Inc.,
 
 #include "enc28j60defs.h"
 
-#define ENC_DDR		DDRB
-#define ENC_PORT	PORTB
-#define ENC_PIN		PINB
-#define ENC_CS		4
-#define ENC_MOSI	5
-#define ENC_MISO	6
-#define ENC_SCK		7
-
 #ifdef __cplusplus
 extern "C" {
 #endif
