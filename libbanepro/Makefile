@@ -1,13 +1,13 @@
 # Sources:
-C_SRC=ethernet.c arp.c ipv4.c icmp.c utils.c
-H_SRC=ethernet.h arp.h ipv4.h icmp.h utils.h
+C_SRC=banepro_ethernet.c banepro_arp.c banepro_ipv4.c banepro_icmp.c banepro_utils.c
+H_SRC=banepro_ethernet.h banepro_arp.h banepro_ipv4.h banepro_icmp.h banepro_utils.h banepro_config.h
 
 # Target MCU
 MCU ?= atmega16
-F_CPU ?= 8000000UL
+F_CPU ?= 16000000UL
 
 # Target library:
-TARGET_LIB=libavrbanepro.a
+TARGET_LIB=libbanepro.a
 
 # Additional includes:
 INC=
@@ -49,7 +49,7 @@ $(TARGET_LIB): $(O_FILES) $(H_SRC)
 	$(AR) $(ARFLAGS) $@ $(O_FILES)	
 
 # Objects from C files:
-%.o : %.c
+%.o : %.c $(H_SRC)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # Clean target:

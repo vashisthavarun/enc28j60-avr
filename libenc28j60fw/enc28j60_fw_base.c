@@ -166,14 +166,15 @@ uint16_t max_pkt_size) {
 	e28j60fw_set_rxtx_buf_size(rx_size);
 	
 	/* receive filters: unicast, broadcast and good CRC */
-	/*e28j60fw_write_ctrl_reg_8(E28J60_ERXFCON, _BV(E28J60_UCEN) |
-		_BV(E28J60_CRCEN) | _BV(E28J60_BCEN));*/
+	e28j60fw_write_ctrl_reg_8(E28J60_ERXFCON, _BV(E28J60_UCEN) |
+		_BV(E28J60_CRCEN) | _BV(E28J60_BCEN));
 	
 	/* MAC init. phase 1 */
 	e28j60fw_bitfield_clr(E28J60_MACON2, _BV(E28J60_MARST));
 	
 	/* MAC init. phase 2 */
-	e28j60fw_bitfield_set(E28J60_MACON1, _BV(E28J60_MARXEN));
+	e28j60fw_bitfield_set(E28J60_MACON1,
+		_BV(E28J60_MARXEN) | _BV(E28J60_TXPAUS) | _BV(E28J60_RXPAUS));
 	
 	/* MAC init. phase 3 */
 	e28j60fw_bitfield_set(E28J60_MACON3, _BV(E28J60_PADCFG0) |

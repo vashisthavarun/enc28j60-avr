@@ -1,10 +1,12 @@
 #include <avr/io.h>
 #include <string.h>
 
-#include "ipv4.h"
-#include "utils.h"
+#include "banepro_ipv4.h"
+#include "banepro_utils.h"
 
-uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf) {
+#if BANEPRO_ENABLE_IPV4
+
+uint8_t banepro_ipv4_format_header(struct banepro_ipv4_info* info, uint8_t* buf) {
 	uint16_t checksum;
 	
 	/* version/IHL, type of service, length */
@@ -26,15 +28,15 @@ uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf) {
 	
 	/* transport protocol */
 	switch (info->proto) {
-		case PROTO_IPV4_PROTO_ICMP:
+		case BANEPRO_IPV4_PROTO_ICMP:
 		buf[9] = 1;
 		break;
 		
-		case PROTO_IPV4_PROTO_TCP:
+		case BANEPRO_IPV4_PROTO_TCP:
 		buf[9] = 6;
 		break;
 		
-		case PROTO_IPV4_PROTO_UDP:
+		case BANEPRO_IPV4_PROTO_UDP:
 		buf[9] = 17;
 		break;
 		
@@ -54,7 +56,7 @@ uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf) {
 	} else {
 		buf[10] = 0;
 		buf[11] = 0;
-		checksum = proto_u_checksum(buf, info->header_len);
+		checksum = banepro_u_checksum(buf, info->header_len);
 		buf[10] = (checksum >> 8) & 0xff;
 		buf[11] = checksum & 0xff;
 	}
@@ -62,7 +64,7 @@ uint8_t proto_ipv4_format_header(struct proto_ipv4_info* info, uint8_t* buf) {
 	return 20;
 }
 
-void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info) {
+void banepro_ipv4_analyse(uint8_t* packet, struct banepro_ipv4_info* info) {
 	/* header length (given length is in 4-byte blocks */
 	info->header_len = (packet[0] & 0x0f) * 4;
 	
@@ -74,18 +76,18 @@ void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info) {
 	info->ttl = packet[8];
 	
 	/* transport protocol */
-	info->proto = PROTO_IPV4_PROTO_UNKNOWN;
+	info->proto = BANEPRO_IPV4_PROTO_UNKNOWN;
 	switch (packet[9]) {
 		case 1:
-		info->proto = PROTO_IPV4_PROTO_ICMP;
+		info->proto = BANEPRO_IPV4_PROTO_ICMP;
 		break;
 		
 		case 6:
-		info->proto = PROTO_IPV4_PROTO_TCP;
+		info->proto = BANEPRO_IPV4_PROTO_TCP;
 		break;
 		
 		case 17:
-		info->proto = PROTO_IPV4_PROTO_UDP;
+		info->proto = BANEPRO_IPV4_PROTO_UDP;
 		break;
 		
 		default:
@@ -103,3 +105,5 @@ void proto_ipv4_analyse(uint8_t* packet, struct proto_ipv4_info* info) {
 	/* data start */
 	info->data_start = packet + info->header_len;
 }
+
+#endif /* BANEPRO_ENABLE_IPV4 */

@@ -7,6 +7,8 @@
 #include "enc28j60_fw.h"
 #include "m16_rs232.h"
 #include "testcases.h"
+#include "banepro_utils.h"
+#include "banepro_icmp.h"
 
 static void init_spi(void) {
 	SPCR |= _BV(SPE) | _BV(MSTR) | _BV(SPR1) | _BV(SPR0);

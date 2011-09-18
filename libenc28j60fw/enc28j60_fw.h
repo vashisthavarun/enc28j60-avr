@@ -144,7 +144,7 @@ uint8_t e28j60fw_has_new_packet(void);
 uint8_t e28j60fw_all_packets_sent(void);
 
 /**
- * Sets the RX/TX buffers.
+ * Sets the RX/TX buffers sizes.
  *
  * @param rx_size	RX buffer size (TX is (8 kIB - RX size))
  */

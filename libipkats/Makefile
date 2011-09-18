@@ -1,13 +1,13 @@
 # Sources:
-C_SRC=banepro_ethernet.c banepro_arp.c banepro_ipv4.c banepro_icmp.c banepro_utils.c
-H_SRC=banepro_ethernet.h banepro_arp.h banepro_ipv4.h banepro_icmp.h banepro_utils.h banepro_config.h
+C_SRC=ipk.c
+H_SRC=ipk.h
 
 # Target MCU
 MCU ?= atmega16
 F_CPU ?= 16000000UL
 
 # Target library:
-TARGET_LIB=libbanepro.a
+TARGET_LIB=libipkats.a
 
 # Additional includes:
 INC=

@@ -1,21 +1,25 @@
 #include <avr/io.h>
 #include <string.h>
 
-#include "arp.h"
+#include "banepro_arp.h"
+#include "banepro_utils.h"
+#include "banepro_config.h"
 
-void proto_arp_analyse(uint8_t* packet, struct proto_arp_info* info) {
+#if BANEPRO_ENABLE_ARP
+
+void banepro_arp_analyse(uint8_t* packet, struct banepro_arp_info* info) {
 	uint8_t hw_len, proto_len;
 	
 	/* assume a valid packet */
 	info->is_valid = 1;
 	
 	/* types */
-	info->hw_type = PROTO_ARP_HWTYPE_UNKNOWN;
+	info->hw_type = BANEPRO_ARP_HWTYPE_UNKNOWN;
 	switch (packet[0]) {
 		case 0:
 		switch (packet[1]) {
 			case 1:
-			info->hw_type = PROTO_ARP_HWTYPE_ETH;
+			info->hw_type = BANEPRO_ARP_HWTYPE_ETH;
 			break;
 			
 			default:
@@ -28,12 +32,12 @@ void proto_arp_analyse(uint8_t* packet, struct proto_arp_info* info) {
 		info->is_valid = 0;
 		break;
 	}
-	info->proto_type = PROTO_ARP_PTYPE_UNKNOWN;
+	info->proto_type = BANEPRO_ARP_PTYPE_UNKNOWN;
 	switch (packet[2]) {
 		case 8:
 		switch (packet[3]) {
 			case 0:
-			info->hw_type = PROTO_ARP_PTYPE_IP;
+			info->hw_type = BANEPRO_ARP_PTYPE_IP;
 			break;
 			
 			default:
@@ -50,8 +54,8 @@ void proto_arp_analyse(uint8_t* packet, struct proto_arp_info* info) {
 	/* lengths */
 	info->hw_addr_len = packet[4];
 	info->proto_addr_len = packet[5];
-	if (info->hw_addr_len > PROTO_ARP_MAX_ADDR_LEN ||
-	info->proto_addr_len > PROTO_ARP_MAX_ADDR_LEN) {
+	if (info->hw_addr_len > BANEPRO_ARP_MAX_ADDR_LEN ||
+	info->proto_addr_len > BANEPRO_ARP_MAX_ADDR_LEN) {
 		info->is_valid = 0;
 	}
 	
@@ -60,16 +64,16 @@ void proto_arp_analyse(uint8_t* packet, struct proto_arp_info* info) {
 	proto_len = info->proto_addr_len;
 	
 	/* operation */
-	info->op = PROTO_ARP_OP_UNKNOWN;
+	info->op = BANEPRO_ARP_OP_UNKNOWN;
 	switch (packet[6]) {
 		case 0:
 		switch (packet[7]) {
 			case 1:
-			info->op = PROTO_ARP_OP_REQUEST;
+			info->op = BANEPRO_ARP_OP_REQUEST;
 			break;
 			
 			case 2:
-			info->op = PROTO_ARP_OP_REPLY;
+			info->op = BANEPRO_ARP_OP_REPLY;
 			break;
 			
 			default:
@@ -92,8 +96,8 @@ void proto_arp_analyse(uint8_t* packet, struct proto_arp_info* info) {
 	memcpy(info->tpa, packet + 8 + (2 * hw_len) + proto_len, proto_len);
 }
 
-void proto_arp_inplace_reply(struct proto_arp_info* info, uint8_t* my_hw_addr) {
-	uint8_t buf [PROTO_ARP_MAX_ADDR_LEN];
+void banepro_arp_inplace_reply(struct banepro_arp_info* info, uint8_t* my_hw_addr) {
+	uint8_t buf [BANEPRO_ARP_MAX_ADDR_LEN];
 	uint8_t hw_len, proto_len;
 	
 	/* cache */
@@ -101,7 +105,7 @@ void proto_arp_inplace_reply(struct proto_arp_info* info, uint8_t* my_hw_addr) {
 	proto_len = info->proto_addr_len;
 	
 	/* reply operation */
-	info->op = PROTO_ARP_OP_REPLY;
+	info->op = BANEPRO_ARP_OP_REPLY;
 	
 	/* swap sender/target addresses */
 	memcpy(info->tha, info->sha, hw_len);
@@ -111,7 +115,7 @@ void proto_arp_inplace_reply(struct proto_arp_info* info, uint8_t* my_hw_addr) {
 	memcpy(info->tpa, buf, proto_len);
 }
 
-uint8_t proto_arp_format_packet(struct proto_arp_info* info, uint8_t* buf) {
+uint8_t banepro_arp_format_packet(struct banepro_arp_info* info, uint8_t* buf) {
 	uint8_t hw_len, proto_len;
 	uint8_t* ori = buf;
 	
@@ -121,7 +125,7 @@ uint8_t proto_arp_format_packet(struct proto_arp_info* info, uint8_t* buf) {
 	
 	/* hardware type */
 	switch (info->hw_type) {
-		case PROTO_ARP_HWTYPE_ETH:
+		case BANEPRO_ARP_HWTYPE_ETH:
 		buf[0] = 0;
 		buf[1] = 1;
 		break;
@@ -132,7 +136,7 @@ uint8_t proto_arp_format_packet(struct proto_arp_info* info, uint8_t* buf) {
 	
 	/* protocol type */
 	switch (info->proto_type) {
-		case PROTO_ARP_PTYPE_IP:
+		case BANEPRO_ARP_PTYPE_IP:
 		buf[2] = 8;
 		buf[3] = 0;
 		break;
@@ -148,11 +152,11 @@ uint8_t proto_arp_format_packet(struct proto_arp_info* info, uint8_t* buf) {
 	/* operation */
 	buf[6] = 0;
 	switch (info->op) {
-		case PROTO_ARP_OP_REQUEST:
+		case BANEPRO_ARP_OP_REQUEST:
 		buf[7] = 1;
 		break;
 		
-		case PROTO_ARP_OP_REPLY:
+		case BANEPRO_ARP_OP_REPLY:
 		buf[7] = 2;
 		break;
 		
@@ -175,3 +179,5 @@ uint8_t proto_arp_format_packet(struct proto_arp_info* info, uint8_t* buf) {
 	
 	return (uint8_t) (buf - ori);
 }
+
+#endif /* BANEPRO_ENABLE_ARP */
