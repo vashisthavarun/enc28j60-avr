@@ -1,6 +1,6 @@
 # Sources:
-C_SRC=ipk.c
-H_SRC=ipk.h
+C_SRC=ipk.c ipk_arp.c
+H_SRC=ipk.h ipk_arp.h ipk_config.h
 
 # Target MCU
 MCU ?= atmega16
@@ -10,7 +10,7 @@ F_CPU ?= 16000000UL
 TARGET_LIB=libipkats.a
 
 # Additional includes:
-INC=
+INC=-I../libbanepro -I../libenc28j60fw -I../libenc28j60d
 
 # Configuration:
 HEXFORMAT=ihex

@@ -13,7 +13,7 @@ F_CPU ?= 16000000UL
 TARGET_LIB=libenc28j60fw.a
 
 # Additional includes:
-INC=-I../avrutils $(addprefix -I../lib,$(MY_LIBS))
+INC=$(addprefix -I../lib,$(MY_LIBS))
 
 # Configuration:
 HEXFORMAT=ihex

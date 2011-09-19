@@ -13,9 +13,16 @@
 #define BANEPRO_IPV4_PROTO_TCP		2
 #define BANEPRO_IPV4_PROTO_UDP		3
 
-/* Builds a 32-bit IP address */
-#define BANEPRO_IPV4_ADDR(a, b, c, d)	((((a) & 0xff) << 24) | \
-	(((b) & 0xff) << 16) | (((c) & 0xff) << 8) | ((d) & 0xff))
+/**
+ * Compares two IPv4 addresses.
+ *
+ * @param addr_a	First address
+ * @param addr_b	Second address
+ * @return		1 if equal, 0 otherwise
+ */
+#define BANEPRO_IPV4_CMP(addr_a, addr_b) \
+	((addr_a[0] == addr_b[0]) && (addr_a[1] == addr_b[1]) && \
+	(addr_a[2] == addr_b[2] && addr_a[3] == addr_b[3]))
 
 /* IPv4 address */
 typedef uint8_t banepro_ipv4_addr [4];
